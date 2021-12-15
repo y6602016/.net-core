@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Catalog.Repositories;
 using Catalog.Entities;
+using Catalog.Dtos;
 
 namespace Catalog.Controllers
 {
@@ -10,33 +11,40 @@ namespace Catalog.Controllers
   [Route("items")]
   public class ItemsController : ControllerBase
   {
-    private readonly InMemItemsRepository repository;
+    private readonly IItemsRepository repository;
 
-    // constructor
-    public ItemsController()
+    // constructor, Dependency injection, take interface as parameter
+    // controller just take interface(abstract container), the repository will
+    // implement the interface and register the interface in startup.cs file
+    // so controller doesn't care about which repository is used, every repository
+    // implements the interface can be used. 
+    public ItemsController(IItemsRepository repository)
     {
       // create the in-memory repositories
-      repository = new InMemItemsRepository();
+      this.repository = repository;
     }
 
     // let GetItems() react to the get request, declare [HttpGet]
     // [Get] url: /items
     [HttpGet]
-    public IEnumerable<Item> GetItems()
+    public IEnumerable<ItemDto> GetItems()
     {
-      return repository.GetItems();
+      // call extension method, item call AsDto, item will be the this parameter
+      // of the AsDto function
+      var items = repository.GetItems().Select(item => item.AsDto());
+      return items;
     }
 
     // [Get] url: /items/{id}
     [HttpGet("{id}")]
-    public ActionResult<Item> GetItem(Guid id)
+    public ActionResult<ItemDto> GetItem(Guid id)
     {
       var item = repository.GetItem(id);
       if (item is null)
       {
         return NotFound();
       }
-      return item;
+      return item.AsDto();
     }
   }
 }
