@@ -62,5 +62,48 @@ namespace Catalog.Controllers
       repository.CreateItem(item);
       return CreatedAtAction(nameof(GetItem), new { id = item.Id }, item.AsDto());
     }
+
+    // we update object properties here, update object's index in repository in InMemItemsRepository.cs
+    // [Put] url: /items/{id}
+    [HttpPut("{id}")]
+    public ActionResult UpdateItem(Guid id, UpdateItemDto itemDto)
+    {
+      var existingItem = repository.GetItem(id);
+
+      // if not find item
+      if (existingItem is null)
+      {
+        return NotFound();
+      }
+
+      // if found, update the property by "with" expression
+      Item updatedItem = existingItem with
+      {
+        Name = itemDto.Name,
+        Price = itemDto.Price
+      };
+
+      repository.UpdateItem(updatedItem);
+
+      return NoContent();
+    }
+
+    // [Delete] url: /items/{id}
+    [HttpDelete("{id}")]
+    public ActionResult DeleteItem(Guid id)
+    {
+      var existingItem = repository.GetItem(id);
+
+      // if not find item
+      if (existingItem is null)
+      {
+        return NotFound();
+      }
+
+      // if found, delete it
+      repository.DeleteItem(id);
+
+      return NoContent();
+    }
   }
 }

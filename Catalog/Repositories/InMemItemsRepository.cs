@@ -27,5 +27,18 @@ namespace Catalog.Repositories
     {
       items.Add(item);
     }
+
+    // here we only update index, update object properties in controller
+    public void UpdateItem(Item item)
+    {
+      var index = items.FindIndex(exisitingitem => exisitingitem.Id == item.Id);
+      items[index] = item;
+    }
+
+    public void DeleteItem(Guid id)
+    {
+      var index = items.FindIndex(exisitingitem => exisitingitem.Id == id);
+      items.RemoveAt(index);
+    }
   }
 }
