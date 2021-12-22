@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Catalog.Repositories;
+using Catalog.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -12,6 +13,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Driver;
 
 namespace API
 {
@@ -27,8 +32,19 @@ namespace API
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+      // serialize the item entity's property: Id and CreatedDate
+      BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
+      BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
+
+      // mongoDb service
+      services.AddSingleton<IMongoClient>(ServiceProvider =>
+      {
+        var settings = Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
+        return new MongoClient(settings.ConnectionString);
+      });
+
       // dependency register the interface
-      services.AddSingleton<IItemsRepository, InMemItemsRepository>();
+      services.AddSingleton<IItemsRepository, MongoDbItemsRepository>();
       services.AddControllers();
       services.AddSwaggerGen(c =>
       {
