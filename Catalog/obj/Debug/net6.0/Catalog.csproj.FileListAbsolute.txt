@@ -41,3 +41,4 @@
 /Users/mike/Desktop/dotnet/Catalog/bin/Debug/net6.0/runtimes/linux/native/libmongocrypt.so
 /Users/mike/Desktop/dotnet/Catalog/bin/Debug/net6.0/runtimes/osx/native/libmongocrypt.dylib
 /Users/mike/Desktop/dotnet/Catalog/bin/Debug/net6.0/runtimes/win/native/mongocrypt.dll
+/Users/mike/Desktop/dotnet/Catalog/bin/Debug/net6.0/HealthChecks.MongoDb.dll
