@@ -13,33 +13,34 @@ spec:
         app: mongodb
     spec:
       containers:
-      - name: mongodb
-        image: mongo
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
-        ports:
-        - containerPort: 27017
-        env:
-          - name: MONGO_INITDB_ROOT_USERNAME
-            value: "mongoadmin"
-          - name: MONGO_INITDB_ROOT_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: catalog-secrets
-                key: mongodb-password
-        volumeMounts:
-          - mountPath: /data/db
-            name: data
+        - name: mongodb
+          image: mongo
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 27017
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: "mongoadmin"
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: catalog-secrets
+                  key: mongodb-password
+          volumeMounts:
+            - mountPath: /data/db
+              name: data
   volumeClaimTemplates:
     - metadata:
         name: data
       spec:
         accessModes: ["ReadWriteOnce"]
-        resources:  
+        resources:
           requests:
             storage: 1Gi
+
 ---
 apiVersion: v1
 kind: Service
@@ -50,5 +51,5 @@ spec:
   selector:
     app: mongodb
   ports:
-  - port: 27017
-    targetPort: 27017
+    - port: 27017
+      targetPort: 27017
